@@ -176,8 +176,6 @@ else
     [Parameter]
     public string Page { get; set; } = "1";
     [Parameter]
-    public string Transaction { get; set; }
-    [Parameter]
     public string SearchTerm { get; set; } = string.Empty;
 
     protected PagedResult<Claim> Claims;
@@ -228,7 +226,6 @@ else
 
     protected void PagerPageChanged(int page)
     {
-        Transaction = string.Empty;
         UriHelper.NavigateTo("/claim/list/" + page);
     }
 
@@ -275,8 +272,7 @@ else
         {
             await Http.SendJsonAsync(HttpMethod.Put, Storage.GetItem("environment_uri") + "/claim/" + Convert.ToInt32(CurrentClaimId), claim);
         }
-        this.isAdd = false;
-        claim = new Claim();
+        CloseModal();
         Storage.SetItem("Transaction", "modified");
         await OnParametersSetAsync();
     }
@@ -286,8 +282,7 @@ else
         var token = Storage["JWT-Token"];
         Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         await Http.DeleteAsync(Storage.GetItem("environment_uri") + "/claim/" + Convert.ToInt32(CurrentClaimId));
-        this.isView = false;
-        this.isDelete = false;
+        CloseModal();
         Storage.SetItem("Transaction", "modified");
         await OnParametersSetAsync();
     }
